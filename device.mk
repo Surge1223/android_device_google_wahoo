@@ -585,6 +585,14 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 PRODUCT_COPY_FILES += \
     device/google/wahoo/fstab.hardware:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.$(PRODUCT_HARDWARE)
 
+# Provide meaningful APN configuration
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/apns-conf.xml:system/etc/apns-conf.xml
+
+# Add back old APNs
+PRODUCT_COPY_FILES += \
+    device/google/wahoo/old-apns-conf.xml:system/etc/old-apns-conf.xml
+
 # Use the default charger mode images
 PRODUCT_PACKAGES += \
     charger_res_images
