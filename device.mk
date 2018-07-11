@@ -42,10 +42,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.control_privapp_permissions=enforce
 
-PRODUCT_PACKAGES += \
-    messaging \
-    netutils-wrapper-1.0
-
 LOCAL_PATH := device/google/wahoo
 
 SRC_MEDIA_HAL_DIR := hardware/qcom/media/msm8998
@@ -82,7 +78,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/services/vr/virtual_touchpad/idc/vr-virtual-touchpad-0.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/vr-virtual-touchpad-0.idc \
     frameworks/native/services/vr/virtual_touchpad/idc/vr-virtual-touchpad-1.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/vr-virtual-touchpad-1.idc
 
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
   PRODUCT_COPY_FILES += \
       $(LOCAL_PATH)/init.hardware.diag.rc.userdebug:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.$(PRODUCT_HARDWARE).diag.rc
 else
@@ -110,9 +106,8 @@ AB_OTA_UPDATER := true
 
 AB_OTA_PARTITIONS += \
     boot \
-    system \
     vbmeta \
-    dtbo
+    system
 
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_system=true \
@@ -132,7 +127,7 @@ PRODUCT_PACKAGES += \
     update_engine_sideload
 
 # The following modules are included in debuggable builds only.
-PRODUCT_PACKAGES_DEBUG += \
+PRODUCT_PACKAGES += \
     bootctl \
     update_engine_client
 
@@ -585,10 +580,6 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 PRODUCT_COPY_FILES += \
     device/google/wahoo/fstab.hardware:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.$(PRODUCT_HARDWARE)
 
-# Provide meaningful APN configuration
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/apns-conf.xml:system/etc/apns-conf.xml
-
 # Add back old APNs
 PRODUCT_COPY_FILES += \
     device/google/wahoo/old-apns-conf.xml:system/etc/old-apns-conf.xml
@@ -617,6 +608,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Include vndk/vndk-sp/ll-ndk modules
 PRODUCT_PACKAGES += vndk_package
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.vndk.version=27.1.0 \
 
 # Override heap growth limit due to high display density on device
 PRODUCT_PROPERTY_OVERRIDES += \
