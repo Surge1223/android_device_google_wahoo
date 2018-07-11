@@ -6,6 +6,8 @@ allow hal_audio_default audio_data_file:file create_file_perms;
 allow hal_audio_default perfd:unix_stream_socket connectto;
 allow hal_audio_default perfd_socket:sock_file write;
 
+allow hal_audio_default self:process execmem;
+
 userdebug_or_eng(`
   allow hal_audio diag_device:chr_file rw_file_perms;
 ')
