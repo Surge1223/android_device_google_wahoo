@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+LOCAL_PATH := device/google/wahoo
+
+
 PRODUCT_PROPERTY_OVERRIDES += \
     keyguard.no_require_sim=true
 
@@ -27,9 +30,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Enforce privapp-permissions whitelist
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.control_privapp_permissions=enforce
-
-LOCAL_PATH := device/google/wahoo
+    ro.control_privapp_permissions=disable
 
 SRC_MEDIA_HAL_DIR := hardware/qcom/media/msm8998
 SRC_DISPLAY_HAL_DIR := hardware/qcom/display/msm8998
@@ -62,6 +63,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/init.qcom.ipastart.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qcom.ipastart.sh \
     $(LOCAL_PATH)/init.insmod.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.insmod.sh \
     $(LOCAL_PATH)/init.ramoops.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/init.ramoops.sh \
+    $(LOCAL_PATH)/preloads_copy.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/preloads_copy.sh \
     frameworks/native/services/vr/virtual_touchpad/idc/vr-virtual-touchpad-0.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/vr-virtual-touchpad-0.idc \
     frameworks/native/services/vr/virtual_touchpad/idc/vr-virtual-touchpad-1.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/vr-virtual-touchpad-1.idc
 
@@ -93,14 +95,22 @@ AB_OTA_UPDATER := true
 
 AB_OTA_PARTITIONS += \
     boot \
-    vbmeta \
-    system
+    system \
+    vbmeta
 
+# A/B OTA dexopt update_engine hookup
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_system=true \
     POSTINSTALL_PATH_system=system/bin/otapreopt_script \
     FILESYSTEM_TYPE_system=ext4 \
     POSTINSTALL_OPTIONAL_system=true
+
+AB_OTA_POSTINSTALL_CONFIG += \
+   RUN_POSTINSTALL_system=true \
+   POSTINSTALL_PATH_system=system/bin/preloads_copy.sh \
+   FILESYSTEM_TYPE_system=ext4 \
+   POSTINSTALL_OPTIONAL_system=true
+
 
 # Enable update engine sideloading by including the static version of the
 # boot_control HAL and its dependencies.
@@ -208,7 +218,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.videopause.mode=1 \
     persist.radio.sap_silent_pin=1 \
     persist.radio.sib16_support=1 \
-    persist.radio.data_con_rprt=1 \
+    persist.radio.data_con_rprt=true \
     persist.radio.always_send_plmn=true \
     persist.rcs.supported=1 \
     rild.libpath=/vendor/lib64/libril-qc-qmi-1.so
@@ -522,9 +532,9 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 PRODUCT_COPY_FILES += \
     device/google/wahoo/fstab.hardware:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.$(PRODUCT_HARDWARE)
 
-# Add back old APNs
-PRODUCT_COPY_FILES += \
-    device/google/wahoo/old-apns-conf.xml:system/etc/old-apns-conf.xml
+# Provide meaningful APN configuration
+# PRODUCT_COPY_FILES += \
+#     $(LOCAL_PATH)/apns-full-conf.xml:system/etc/apns-conf.xml
 
 # Use the default charger mode images
 PRODUCT_PACKAGES += \
@@ -550,6 +560,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.vndk.version=27.1.0 \
+
+# Include vndk/vndk-sp/ll-ndk modules
+PRODUCT_PACKAGES += vndk_package
+
+#PRODUCT_ENFORCE_RRO_TARGETS := framework-res
 
 # Override heap growth limit due to high display density on device
 PRODUCT_PROPERTY_OVERRIDES += \
