@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+LOCAL_PATH := device/google/wahoo
 ifneq (,$(filter 27, $(PRODUCT_EXTRA_VNDK_VERSIONS)))
     _vndk_test := true
 endif
@@ -21,15 +22,11 @@ endif
 ifeq (,$(_vndk_test))
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 endif
+PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 PRODUCT_ACTIONABLE_COMPATIBLE_PROPERTY_DISABLE := true
-
-LOCAL_PATH := device/google/wahoo
 
 PRODUCT_PROPERTY_OVERRIDES += \
     keyguard.no_require_sim=true
-
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-    ro.adb.secure=1
 
 PRODUCT_COPY_FILES += \
     device/google/wahoo/default-permissions.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default-permissions/default-permissions.xml \
@@ -108,7 +105,8 @@ AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += \
     boot \
     system \
-    vbmeta
+    vbmeta \
+    dtbo
 
 # A/B OTA dexopt update_engine hookup
 AB_OTA_POSTINSTALL_CONFIG += \
@@ -679,7 +677,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.camera.notify_nfc=1
 
 # default usb oem functions
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
   PRODUCT_PROPERTY_OVERRIDES += \
       persist.vendor.usb.usbradio.config=diag
 endif
